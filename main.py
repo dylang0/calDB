@@ -1,2 +1,27 @@
-import .dbEdit
+import dbEdit as db
+import sys
 
+COMBINATION_ARG = "-c"
+NEW_ARG = "-n"
+
+if len(sys.argv) > 1:
+    match sys.argv[1]:
+        case "log":
+        
+            try:
+                if sys.argv[2] == NEW_ARG:
+                    foodName = " ".join(sys.argv[3:])
+                    print("\033[1m" + foodName)
+                    db.logFromNew(foodName)
+                else:
+                    foodName = " ".join(sys.argv[2:])
+                    db.search(foodName)
+            except IndexError:
+                print("Usage: log <fooditem>")
+                
+        case "history":
+            pass
+        case "today":
+            db.showToday()
+        case _:
+            print("\033[1m[?] Unrecognized Argument " + sys.argv[1])
