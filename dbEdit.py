@@ -1,6 +1,7 @@
 import sqlite3
 import sys
 from datetime import date
+from tabulate import tabulate
 
 conn = sqlite3.connect("diet.db")
 cursor = conn.cursor()
@@ -22,8 +23,12 @@ def showToday():
     today = date.today().isoformat() # 2025-08-20
     cursor.execute("SELECT * FROM entries WHERE date = ?", (today,))
     entries = cursor.fetchall()
+    table = []
+    relativeIndex = 0
     for entry in entries:
-        print(entry[1:])
+        table.append( (relativeIndex,) + entry[2:])
+        relativeIndex += 1
+    print(tabulate(table, headers=["ID", "Name", "Cals", "Carbs", "Fats", "Protein"]))
 
 def addEntry(foodName, cals, weight_g, carbs, fats, prot, vol_unit, volume):
     cursor.execute("INSERT INTO foodList(food, calories, weight_g, carbohydrates, fats, protein, vol_unit, volume) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
