@@ -52,3 +52,27 @@ def combine(f1, f2):
         return False
 
 
+def make(payload):
+    f = init()
+    if(isinstance(payload, list)):
+        f["name"] = payload[1]
+        f["cals"] = payload[2]
+        f["carb"] = payload[3]
+        f["fats"] = payload[4]
+        f["prot"] = payload[5]
+        f["mass"]["g"] = payload[6]
+        f["mass"]["v"] = payload[7]
+        f["mass"]["u"] = payload[8]
+        return f
+    elif(isinstance(payload, str)):
+        f["name"] = payload
+        f["cals"] = input("Calories per serving: ")
+        f["carb"] = input("Carbs per serving: ")
+        f["fats"] = input("Fats per serving: ")
+        f["prot"] = input("Protein per serving: ")
+        f["mass"]["g"] = input("Grams per serving: ")
+        f["mass"]["v"] = input("Volume per serving: ")
+        f["mass"]["u"] = input("Volume Units: ")
+        return f
+    else:
+        return False
