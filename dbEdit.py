@@ -41,8 +41,32 @@ def search(foodName):
     entries = enumerate(cursor.fetchall())
     return(entries)
 
-def logFromEntry():
-    pass
+def select(foodName):
+    entries = search(foodName)
+    table = []
+    relativeIndex = 0
+    for entry in entries:
+        table.append( (relativeIndex,) + entry[2:])
+        relativeIndex += 1
+    #print(tabulate(table, headers=["ID", "Name", "Cals", "Carbs", "Fats", "Protein"]
+    
+
+def logFromEntry(foodName):
+    results = search(foodName)
+    l = len(list(results))
+    if(l == 0):
+        return None
+    elif(l == 1):
+        pass
+        # log only result by weight
+    else:
+        try:
+            response = str(input("Select which item to use by ID: "))
+            
+        except ValueError:
+            print("Error: Input must be a number")
+        # select a result
+        
     
 def logFromNew(name):
     cals = input("Calories (g): ")
