@@ -13,9 +13,9 @@ def select(db, term, col="food", headers=fields, message="$ ", clipFirst=False):
         cleaned = []
         for entry in results:
             cleaned.append(entry[1:])
-        print(tabulate(cleaned, showindex="always", headers=headers))
+        print("\n", tabulate(cleaned, showindex="always", headers=headers), "\n")
     else:
-        print(tabulate(results, showindex="always", headers=headers))
+        print("\n", tabulate(results, showindex="always", headers=headers), "\n")
     index = int(input(message))
     try:
         selection = results[index]
@@ -71,7 +71,7 @@ while running:
                 database.setTable("entries")
                 database.write(data=[today]+s, headers=["date"]+fields)
         case "-c":
-            if int(cmd[1]) < 2: pass
+            if int(cmd[1]) < 1: pass
             newFood = ["", 0, 0, 0, 0, 0, "g"]
             for i in range(int(cmd[1])):
                 print(f"==> {i} <==")
@@ -119,10 +119,18 @@ while running:
             today = date.today().isoformat()
             database.setTable("entries")
             raw = database.search(today, "date")
+            totals = [0, 0, 0, 0]
             cleaned = []
             for entry in raw:
                 cleaned.append(entry[1:])
+                for i in range(4):
+                    totals[i] = entry[i+3]
             print("\n", tabulate(cleaned, headers=["date"]+fields), "\n")
+            macroSum = totals[1] + totals[2] + totals[3]
+            print("\033[1mCalories: ", totals[0],
+                  "\n\033[34mCarbs: ", round((totals[1]/macroSum) * 100, 2), "% (", round(totals[1], 2), "g )",
+                  "\n\033[32mFats: ", round((totals[2]/macroSum) * 100, 2), "% (", round(totals[2], 2), "g )",
+                  "\n\033[31mProtein: ", round((totals[3]/macroSum) * 100, 2), "% (", round(totals[3], 2), "g )\033[0m")
         case "-d":
             database.setTable("list")
             s=database.all()
