@@ -124,7 +124,7 @@ while running:
             for entry in raw:
                 cleaned.append(entry[1:])
                 for i in range(4):
-                    totals[i] = entry[i+3]
+                    totals[i] += entry[i+3]
             print("\n", tabulate(cleaned, headers=["date"]+fields), "\n")
             macroSum = totals[1] + totals[2] + totals[3]
             print("\033[1mCalories: ", totals[0],
