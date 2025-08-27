@@ -80,7 +80,7 @@ while running:
                                 + "$ ").split(" ")
                 if subCMD[0] == "-l":
                     if subCMD[1] == "-n":
-                        for i in range(1,6): newFood[i] += float(subCMD[i+1])
+                        for i in range(1,6): newFood[i] += round(float(subCMD[i+1]), 2)
                     else:
                         name = " ".join(subCMD[1:])
                         database.setTable("list")
@@ -88,7 +88,7 @@ while running:
                         mult = float(input("Serving? "))/s[-2]
                         for i in range(1, 6):
                             s[i] = float(s[i]) * mult
-                        for i in range(1, 6): newFood[i] += float(s[i])
+                        for i in range(1, 6): newFood[i] += round(float(s[i]), 2)
                 elif subCMD[0] == "-c":
                     break
                 else:
