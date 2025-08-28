@@ -27,12 +27,12 @@ class dbReaderWriter:
 
             if searchTerm:
                 if exactMatch:
-                    payload = f"WHERE {col} = '{searchTerm}';"
+                    payload = f" WHERE {col} = '{searchTerm}';"
                 else:
-                    payload = f"WHERE {col} LIKE '%{searchTerm}%';"
+                    payload = f" WHERE {col} LIKE '%{searchTerm}%';"
             else:
                 payload = ""
-                
+
             data = self._cur.execute(f"SELECT * FROM {self.title}" + payload) # auto cursor.fetchall()
 
             results = { header: () for header in self.headers }
@@ -44,20 +44,32 @@ class dbReaderWriter:
             return results
     # --------------------------------------------------
         def write(self, data):
-            if isinstance(data, dict):        
+            if isinstance(data, dict):
                 try:
                     data = [data[header] for header in self.headers]
                 except KeyError:
                     raise ValueError(data)
             elif not isinstance(data, list):
                 raise ValueError(data)
-                
+
+            for i in range(len(data)):
+                if(isinstance(data[i], str)):
+                    data[i] = "'" + data[i] + "'"
+                if data[i] == None:
+                    data[i] = "NULL"
+                else:
+                    data[i] = str(data[i])
+
             self._cur.execute(f"INSERT INTO {self.title} VALUES (" + ", ".join(data) + ")")
             self._conn.commit()
     # --------------------------------------------------
         def erase(self, searchTerm, col = None):
             if col == None:
                 col = self.headers[0]
+                
+            if isinstance(searchTerm, str):
+                searchTerm = "'" + searchTerm + "'"
+                
             self._cur.execute(f"DELETE FROM {self.title} WHERE {col} = {searchTerm};")
             self._conn.commit()
 
@@ -119,7 +131,7 @@ class dbReaderWriter:
             except IndexError:
                 raise ValueError(table)
 
-        return self.TableReaderWriter(table, self._cur, self._conn)
+        return self.TableReaderWriter(table, self)
     # --------------------------------------------------
     def __iter__(self):
         self.iterator = 0
