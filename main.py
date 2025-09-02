@@ -13,7 +13,7 @@ def split3(x, y, z, colors = ("\033[34m", "\033[32m", "\033[31m"), chart="━", 
     total = x + y + z
     segments = tuple([int(val/total * size) for val in (x, y, z)])
     if size > 50:
-        return "".join([color + chart * int(segment/2) + str(round(segment/size, 1)*100) + "%" + chart * int(segment/2) for color, segment in zip(colors, segments)]) + "\033[0m"
+        return "".join([color + chart * int(segment/2) + str(round(segment/size * 100, 1)) + "%" + chart * int(segment/2) for color, segment in zip(colors, segments)]) + "\033[0m"
     else:
         return "".join([color + chart * segment for color, segment in zip(colors, segments)]) + "\033[0m"
     
@@ -84,7 +84,7 @@ else:
             totals = []
             for nutrient in ("calories", "carbohydrates", "fats", "protein"):
                 totals.append(sum(x for x in results[nutrient]))
-            print("Calories Today: ", totals[0], " kcal")
+            print("\n\033[1mCalories Today: ", totals[0], " kcal\033[0m")
             print(split3(totals[1], totals[2], totals[3], size=100))
         case "erase":
             try:
@@ -119,17 +119,17 @@ else:
                 data = [name] + data
                 data[0] = data[0]
                 data[6] = data[6]
-                #print(data)
                 Nutrition.write(data)
         case "saved":
             results = Nutrition.read()
             l = len(results["food"])
-            tableData = { "\033[1mID" : tuple([ "\033[1m" + str(x) + "\033[0m" for x in range(l) ]) }
+            tableData = { "\033[1mindex" : tuple([ "\033[1m" + str(x) + "\033[0m" for x in range(l) ]) }
             tableData.update(results)
             chartData = ()
             for i in range(l):
                 chartData = chartData + (split3(results["carbohydrates"][i], results["fats"][i], results["protein"][i]),)
                 tableData["chart"] = chartData
+
             print(tabulate(tableData, headers="keys", tablefmt=TABLE_FORMAT))
         case "delete":
             try:

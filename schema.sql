@@ -1,4 +1,4 @@
-CREATE TABLE entries (
+CREATE TABLE journal (
 	id 				INTEGER PRIMARY KEY AUTOINCREMENT,
 	date 			TEXT,
 	food 			TEXT,
@@ -6,16 +6,18 @@ CREATE TABLE entries (
 	carbohydrates 	DOUBLE,
 	fats 			DOUBLE,
 	protein 		DOUBLE,
-	mass			DOUBLE,
-	m_unit			TEXT
+	weight			DOUBLE,
+	volume			DOUBLE,
+	vol_unit		TEXT
 );
 
-CREATE TABLE list (
+CREATE TABLE nutrition (
 	food			TEXT PRIMARY KEY,
 	calories		DOUBLE,
 	carbohydrates	DOUBLE,
 	fats			DOUBLE,
 	protein			DOUBLE,
-	mass			DOUBLE,
-	m_unit			TEXT
+	weight			DOUBLE,
+	volume			DOUBLE,
+	vol_unit		TEXT
 );

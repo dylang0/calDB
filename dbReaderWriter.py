@@ -35,30 +35,19 @@ class dbReaderWriter:
 
             data = self._cur.execute(f"SELECT * FROM {self.title}" + payload) # auto cursor.fetchall()
 
-            results = { header: () for header in self.headers }
+            results = { header : () for header in self.headers }
             
             for row in data:
                 for header, entry in zip(self.headers, row):
                     results[header] = results[header] + (entry,)
                 
             return results
+            
     # --------------------------------------------------
         def write(self, data):
-            if isinstance(data, dict):
-                try:
-                    data = [data[header] for header in self.headers]
-                except KeyError:
-                    raise ValueError(data)
-            elif not isinstance(data, list):
-                raise ValueError(data)
+            if not isinstance(data, dict): raise ValueError(data)
+            
 
-            for i in range(len(data)):
-                if(isinstance(data[i], str)):
-                    data[i] = "'" + data[i] + "'"
-                if data[i] == None:
-                    data[i] = "NULL"
-                else:
-                    data[i] = str(data[i])
 
             self._cur.execute(f"INSERT INTO {self.title} VALUES (" + ", ".join(data) + ")")
             self._conn.commit()
@@ -90,36 +79,65 @@ class dbReaderWriter:
         
     # --------------------------------------------------
     def write(self, tableName, headers):
+        # Catch incorrect input types
+        if not isinstance(tableName, str):  raise TypeError(f"{tableName} must be a string")
+        if not isinstance(headers, list):   raise TypeError(f"{headers} must be a list")
+
+        # Convert headers to string for command input
         payload = ", ".join(headers)
         self._cur.execute(f"CREATE TABLE {tableName}({payload})")
         self._conn.commit()
     # --------------------------------------------------
 
     def schema(self, schemaFilePath):
+        # Catch incorrect input types
         if not isinstance(schemaFilePath, str):
-            raise ValueError("Schema file path is not a string")
+            raise TypeError(f"{schemaFilePath} must be a string")
         elif not os.path.isfile(schemaFilePath):
-            raise ValueError("Provided schema file does not exist")
-            
+            raise ValueError(f"{schemaFilePath} does not exist")
+
+        # File I/O
         file = open(schemaFilePath)
         schema = file.read()
-        termina = schema.find(";") + 1
-        schema = schema[:termina]
+
+        # Terminate at the first semicolon instance
+        # Otherwise sqlite cannot execute schema commands
+        termina = schema.find(";")                              # termina := -1 if ";" does not exist
+        if not termina == -1: schema = schema[:termina + 1]     # cut schema command if termina exists
+
+        # Execute schema commands
         self._cur.execute(schema)
         self._conn.commit()
 
     # --------------------------------------------------
+    # Erase table where [ name == table if table is a str | table index == table if table is an int )
     def erase(self, table):
+        existingTables = self.tables()
+        # Handle input types
+        if isinstance(table, int):
+            try:
+                table = existingTables[table]    # Get table at input index
+            except IndexError:
+                # Index already does not exist, no erasure needed
+                return
+            
+    
+        # Catch incorrect input types
         if not isinstance(table, (int, str)):
             raise TypeError(table)
+
+        # Get table name as string by index if int was given
         elif isinstance(table, int):
             try:
                 table = self.read[table]
             except IndexError:
                 raise ValueError(table)
-
-        self._cur.execute(f"DROP TABLE {table}")
-        self._conn.commit()
+        try:
+            self._cur.execute(f"DROP TABLE {table}")
+            self._conn.commit()
+        except sqlite3.OperationalError:
+            # TPostcondition is already satisfied
+            pass
 
     # --------------------------------------------------
     def access(self, table):
