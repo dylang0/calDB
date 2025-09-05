@@ -77,12 +77,12 @@ class Food:
         
         # Multiply attributes
         f.name      = self.name
-        f.cals      = self.cals     * val
-        f.fats      = self.fats     * val
-        f.carbs     = self.carbs    * val
-        f.protein   = self.protein  * val
-        f.weight    = self.weight   * val
-        f.volume    = self.volume   * val
+        f.cals      = round(self.cals     * val, 2)
+        f.fats      = round(self.fats     * val, 2)
+        f.carbs     = round(self.carbs    * val, 2)
+        f.protein   = round(self.protein  * val, 2)
+        f.weight    = round(self.weight   * val, 2)
+        f.volume    = round(self.volume   * val, 2)
         f.unit      = self.unit
 
         # Return the completed product
